@@ -1,0 +1,193 @@
+﻿@model InsertCartModel
+<div class="container">
+    <div class="row justify-content-center align-items-center center-container">
+        <h2 class="mb-5">Demo shop</h2>
+        <form class="col-12" id="form-container">
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="text" class="form-control" id="amount" name="amount" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" class="form-control" id="description" name="description">
+            </div>
+            <div class="form-group">
+                <label for="reference">Reference</label>
+                <input type="text" class="form-control" id="reference" name="reference">
+            </div>
+            <div class="form-group">
+                <label for="identifier" class="mb-1">Phone number</label><br />
+                <div class="radio-group">
+                    <input type="radio" name="identifier" id="radio1" value="7700001" checked>
+                    <label for="radio1" class="font-weight-normal"> Simulates cancel (7700001)</label>
+                </div>
+                <div class="radio-group">
+                    <input type="radio" name="identifier" id="radio2" value="7700002">
+                    <label for="radio2" class="font-weight-normal"> Simulates success (7700002)</label>
+                </div>
+                <div class="radio-group">
+                    <input type="radio" name="identifier" id="radio3" value="7700003">
+                    <label for="radio3" class="font-weight-normal"> Simulates no action taken by user (7700003)</label>
+                </div>
+            </div>
+            <div class="form-group mt-5">
+                <button type="submit" value="submit" href="@Url.Action("InsertCart", "Home")" id="buyBtn" class="btn-secondary m-auto">
+                    <span id="loaningSpan" class="d-none">
+                        <span class="spinner-border spinner-border-sm"></span>
+                        Loading..
+                    </span>
+                    <span id="normalSpan">
+                        Buy
+                    </span>
+                </button>
+                <button type="button" value="cancel" id="cancelBtn" class="form-control btn btn-link cancel mt-3">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="right-container">
+    <h5 class="p-3 bb-inset">Log info</h5>
+    <div class="p-3" id="logContainer">
+        No info available.
+    </div>
+</div>
+
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+
+<script>
+    var logger = document.getElementById("logContainer");
+    var intervalHandler = -1;
+
+    function changeBuyBtnState(loadingMode) {
+        if (loadingMode) {
+            $("#buyBtn").prop('disabled', true);
+            $("#loaningSpan").removeClass("d-none");
+            $("#normalSpan").addClass("d-none");
+        }
+        else {
+            $("#buyBtn").prop('disabled', false);
+            $("#loaningSpan").addClass("d-none");
+            $("#normalSpan").removeClass("d-none");
+        }
+    }
+
+    function logMessage(message) {
+        var dt = new Date();
+        var time = dt.getHours() + ":" + (dt.getMinutes() < 10 ? '0' : '') + dt.getMinutes() + ":" + (dt.getSeconds() < 10 ? '0' : '') + dt.getSeconds();
+
+        if (typeof message == 'object') {
+            logger.innerHTML += time + ' - ' + (JSON && JSON.stringify ? JSON.stringify(message) : message) + '<br />';
+        } else {
+            logger.innerHTML += time + ' - ' + message + '<br />';
+        }
+    }
+
+    $("#cancelBtn").on("click", function (e) {
+        changeBuyBtnState(false);
+        clearInterval(intervalHandler);
+        logMessage("Stoped by cancel button!");
+    });
+
+    $("#buyBtn").on("click", function (e) {
+        e.preventDefault();
+
+        if ($("#amount").val().length === 0) {
+            alert("Enter amount");
+            return false;
+        }
+        if ($("#reference").val().length === 0) {
+            alert("Enter reference");
+            return false;
+        }
+        logger.innerHTML = "";
+        postFormData();
+    });
+
+    function postFormData() {
+        changeBuyBtnState(true);
+        logMessage("Creating cart...");
+        $.ajax({
+            url: $("#buyBtn").attr("href"),
+            type: "POST",
+            data: { amount: $("#amount").val(), description: $("#description").val(), reference: $("#reference").val(), customerId: $("input[name='identifier']:checked").val() },
+            success: function (result) {
+                if (result.success) {
+                    var model = $.parseJSON(result.data);
+                    var transactionId = model.TransactionId;
+
+                    logMessage("Cart created!");
+                    checkCart(transactionId);
+                    return false;
+
+                } else {
+                    changeBuyBtnState(false);
+                    logMessage("Error on cart creation!");
+                    return false;
+                }
+            },
+            error: function (result) {
+                changeBuyBtnState(false);
+                logMessage("Error on cart creation!");
+            }
+        });
+    }
+
+    function checkCart(data) {
+        if (data == undefined) {
+            data = "";
+        }
+
+        logMessage("Checking cart...");
+
+        var checkingFunction = function () {
+            $.ajax({
+                url: "Home/CheckCart",
+                data: { transactionId: data },
+                type: "POST",
+                success: function (result) {
+                    if (result.success) {
+                        var model = $.parseJSON(result.data);
+                        if (model.Success && model.PaymentSuccessful) {
+                            changeBuyBtnState(false);
+                            clearInterval(intervalHandler);
+                            logMessage("SUCCESS! Loan created.");
+                        }
+                        else {
+                            if (model.ResultCode == 10423) {
+                                changeBuyBtnState(false);
+                                clearInterval(intervalHandler);
+                                logMessage("Sale canceled by customer!");
+
+                            }
+                            else if (model.Message != null && model.Message != "") {
+                                logMessage(model.Message);
+                            }
+                            else {
+                                logMessage("Sale not confirmed! Checking again...");
+                            }
+                        }
+                    }
+                },
+                error: function (result) {
+                    changeBuyBtnState(false);
+                    clearInterval(intervalHandler);
+                    logMessage("Error on checking cart!");
+                }
+            });
+        };
+
+        intervalHandler = window.setInterval(checkingFunction, 3000);
+    }
+
+    var connection = new signalR.HubConnectionBuilder().withUrl("/paymentHub").build();
+
+    connection.on("ReceiveMessage", function (user, message) {
+        logMessage(message);
+    });
+
+    connection.start().then(function () {
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+</script>
