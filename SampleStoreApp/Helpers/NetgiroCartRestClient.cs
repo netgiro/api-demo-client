@@ -20,47 +20,21 @@ namespace SampleStoreApp.Helpers
 
         public string InsertCart(InsertCartModel insertCartModel)
         {
-            var client = new RestClient(_apiURL);
-            var request = new RestRequest("Checkout/InsertCart", Method.POST, DataFormat.Json);
-
-            var nonce = "nonce";
-            var url = client.BaseUrl + request.Resource;
-            var jsonModel = JsonConvert.SerializeObject(insertCartModel, new JsonSerializerSettings
-            {
-                Error = (object sender, ErrorEventArgs args) =>
-                {
-                    args.ErrorContext.Handled = true;
-                }
-            });
-
-            var signature = Signature.CalculateSignature(_secretKey, nonce + url + jsonModel);
-
-            request.AddJsonBody(insertCartModel);
-            request.AddHeader(Constants.Netgiro_AppKey, _applicationId);
-            request.AddHeader(Constants.Netgiro_Signature, signature);
-            request.AddHeader(Constants.Netgiro_Nonce, nonce);
-
-            var response = client.Execute(request);
-
-            if (response.IsSuccessful)
-            {
-                return response.Content;
-            }
-
-            throw response.ErrorException;
+            RestRequest restRequest = GenerateRestRequest(insertCartModel, "/Checkout/InsertCart");
+            return ExecuteRequest(restRequest);
         }
 
         public string CheckCart(string transactionId)
         {
-            var client = new RestClient(_apiURL);
-            var request = new RestRequest("Checkout/CheckCart", Method.POST, DataFormat.Json);
+            RestRequest restRequest = GenerateRestRequest(new CheckCartRequest() { TransactionId = transactionId }, "/Checkout/CheckCart");
+            return ExecuteRequest(restRequest);
+        }
 
-            var nonce = "nonce";
-            var url = client.BaseUrl + request.Resource;
-            var model = new CheckCartRequest
-            {
-                TransactionId = transactionId
-            };
+        private RestRequest GenerateRestRequest(object model, string apiAction, string nonce = "nonce")
+        {
+            var request = new RestRequest(apiAction, Method.POST, DataFormat.Json);
+
+            var url = _apiURL.TrimEnd('/') + request.Resource;
             var jsonModel = JsonConvert.SerializeObject(model, new JsonSerializerSettings
             {
                 Error = (object sender, ErrorEventArgs args) =>
@@ -76,7 +50,12 @@ namespace SampleStoreApp.Helpers
             request.AddHeader(Constants.Netgiro_Signature, signature);
             request.AddHeader(Constants.Netgiro_Nonce, nonce);
 
-            var response = client.Execute(request);
+            return request;
+        }
+
+        private string ExecuteRequest(RestRequest restRequest)
+        {
+            var response = (new RestClient(_apiURL)).Execute(restRequest);
 
             if (response.IsSuccessful)
             {
