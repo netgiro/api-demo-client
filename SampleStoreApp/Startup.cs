@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SampleStoreApp.Hubs;
-using SampleStoreApp.Models;
+using SampleStoreApp.Helpers;
 
 namespace SampleStoreApp
 {
@@ -84,6 +84,7 @@ namespace SampleStoreApp
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=RestClient}/{action=Index}/{id?}");
+
                 endpoints.MapHub<PaymentHub>("/paymentHub");
             });
         }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
+using SampleStoreApp.Helpers;
 using SampleStoreApp.Models;
 
 namespace SampleStoreApp.Controllers
@@ -41,12 +42,12 @@ namespace SampleStoreApp.Controllers
                 }
             });
 
-            var signature = Helpers.CalculateSignature(_appSettings.Value.SecretKey, nonce + url + jsonModel);
+            var signature = Signature.CalculateSignature(_appSettings.Value.SecretKey, nonce + url + jsonModel);
 
             request.AddJsonBody(model);
-            request.AddHeader(Helpers.Netgiro_AppKey, _appSettings.Value.ApplicationId);
-            request.AddHeader(Helpers.Netgiro_Signature, signature);
-            request.AddHeader(Helpers.Netgiro_Nonce, nonce);
+            request.AddHeader(Constants.Netgiro_AppKey, _appSettings.Value.ApplicationId);
+            request.AddHeader(Constants.Netgiro_Signature, signature);
+            request.AddHeader(Constants.Netgiro_Nonce, nonce);
 
             var response = client.Execute(request);
 
@@ -78,12 +79,12 @@ namespace SampleStoreApp.Controllers
                 }
             });
 
-            var signature = Helpers.CalculateSignature(_appSettings.Value.SecretKey, nonce + url + jsonModel);
+            var signature = Signature.CalculateSignature(_appSettings.Value.SecretKey, nonce + url + jsonModel);
 
             request.AddJsonBody(model);
-            request.AddHeader(Helpers.Netgiro_AppKey, _appSettings.Value.ApplicationId);
-            request.AddHeader(Helpers.Netgiro_Signature, signature);
-            request.AddHeader(Helpers.Netgiro_Nonce, nonce);
+            request.AddHeader(Constants.Netgiro_AppKey, _appSettings.Value.ApplicationId);
+            request.AddHeader(Constants.Netgiro_Signature, signature);
+            request.AddHeader(Constants.Netgiro_Nonce, nonce);
 
             var response = client.Execute(request);
 

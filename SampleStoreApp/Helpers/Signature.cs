@@ -2,14 +2,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SampleStoreApp.Models
+namespace SampleStoreApp.Helpers
 {
-    public static class Helpers
+    public static class Signature
     {
-        public const string Netgiro_AppKey = "NETGIRO_APPKEY";
-        public const string Netgiro_Signature = "NETGIRO_SIGNATURE";
-        public const string Netgiro_Nonce = "NETGIRO_NONCE";
-
         public static string CalculateSignature(params string[] args)
         {
             string input = string.Join("", args);
