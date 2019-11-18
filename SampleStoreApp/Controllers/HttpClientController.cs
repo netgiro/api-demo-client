@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using SampleStoreApp.Helpers;
 using SampleStoreApp.Models;
+using System;
 
 namespace SampleStoreApp.Controllers
 {
@@ -24,13 +25,39 @@ namespace SampleStoreApp.Controllers
         [HttpPost]
         public IActionResult InsertCart(InsertCartModel model)
         {
-            return null;
+            model.CallbackUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}{Url.Action(nameof(CallbackController.Callback))}";
+
+            INetgiroCart netgiroCart = new NetgiroCartHttpClient(_appSettings.Value.ApiUrl, _appSettings.Value.SecretKey, _appSettings.Value.ApplicationId);
+
+            try
+            {
+                string response = netgiroCart.InsertCart(model);
+
+                return Json(new { success = true, data = response });
+            }
+            catch (Exception ex)
+            {
+                // Error handling goes here
+                return Json(new { success = false });
+            }
         }
 
         [HttpPost]
         public ActionResult CheckCart(string transactionId)
         {
-            return null;
+            INetgiroCart netgiroCart = new NetgiroCartHttpClient(_appSettings.Value.ApiUrl, _appSettings.Value.SecretKey, _appSettings.Value.ApplicationId);
+
+            try
+            {
+                string response = netgiroCart.CheckCart(transactionId);
+
+                return Json(new { success = true, data = response });
+            }
+            catch (Exception ex)
+            {
+                // Error handling goes here
+                return Json(new { success = false });
+            }
         }
     }
 }
