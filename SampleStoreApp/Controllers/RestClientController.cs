@@ -39,7 +39,6 @@ namespace SampleStoreApp.Controllers
             {
                 return Json(new { success = false, data = ex.Message });
             }
-
         }
 
         [HttpPost]

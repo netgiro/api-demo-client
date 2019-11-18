@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using SampleStoreApp.Models;
+﻿using SampleStoreApp.Models;
 
 namespace SampleStoreApp.Helpers
 {
