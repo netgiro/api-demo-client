@@ -37,8 +37,7 @@ namespace SampleStoreApp.Controllers
             }
             catch (Exception ex)
             {
-                // Error handling goes here
-                return Json(new { success = false });
+                return Json(new { success = false, data = ex.Message });
             }
 
         }
@@ -56,8 +55,7 @@ namespace SampleStoreApp.Controllers
             }
             catch (Exception ex)
             {
-                // Error handling goes here
-                return Json(new { success = false });
+                return Json(new { success = false, data = ex.Message });
             }
         }
     }
