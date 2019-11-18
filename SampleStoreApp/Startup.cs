@@ -83,7 +83,7 @@ namespace SampleStoreApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=RestClient}/{action=Index}/{id?}");
                 endpoints.MapHub<PaymentHub>("/paymentHub");
             });
         }

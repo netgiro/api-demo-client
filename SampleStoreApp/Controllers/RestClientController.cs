@@ -1,25 +1,21 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
-using SampleStoreApp.Hubs;
 using SampleStoreApp.Models;
 
 namespace SampleStoreApp.Controllers
 {
-    public class HomeController : Controller
+    public class RestClientController : Controller
     {
         private readonly IOptions<AppSettings> _appSettings;
-        private readonly IHubContext<PaymentHub> _hubcontext;
 
-        public HomeController(IOptions<AppSettings> appSettings, IHubContext<PaymentHub> hubcontext)
+        public RestClientController(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings;
-            _hubcontext = hubcontext;
         }
+
         public IActionResult Index()
         {
             var model = new InsertCartModel();
@@ -30,7 +26,7 @@ namespace SampleStoreApp.Controllers
         [HttpPost]
         public IActionResult InsertCart(InsertCartModel model)
         {
-            model.CallbackUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}{Url.Action(nameof(HomeController.Callback))}";
+            model.CallbackUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}{Url.Action(nameof(CallbackController.Callback))}";
 
             var client = new RestClient(_appSettings.Value.ApiUrl);
             var request = new RestRequest("Checkout/InsertCart", Method.POST, DataFormat.Json);
@@ -97,22 +93,6 @@ namespace SampleStoreApp.Controllers
             }
 
             return Json(new { success = true, data = response.Content });
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> Callback(object obj)
-        {
-            var jsonModel = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
-            {
-                Error = (object sender, ErrorEventArgs args) =>
-                {
-                    args.ErrorContext.Handled = true;
-                }
-            });
-
-            await this._hubcontext.Clients.All.SendAsync("ReceiveMessage", "user", "Callback received");
-
-            return Ok();
         }
     }
 }
