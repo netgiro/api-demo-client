@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using RestSharp;
 using SampleStoreApp.Helpers;
 using SampleStoreApp.Models;
+using System;
 
 namespace SampleStoreApp.Controllers
 {
@@ -29,71 +27,38 @@ namespace SampleStoreApp.Controllers
         {
             model.CallbackUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}{Url.Action(nameof(CallbackController.Callback))}";
 
-            var client = new RestClient(_appSettings.Value.ApiUrl);
-            var request = new RestRequest("Checkout/InsertCart", Method.POST, DataFormat.Json);
+            INetgiroCart netgiroCart = new NetgiroCartRestClient(_appSettings.Value.ApiUrl, _appSettings.Value.SecretKey, _appSettings.Value.ApplicationId);
 
-            var nonce = "nonce";
-            var url = client.BaseUrl + request.Resource;
-            var jsonModel = JsonConvert.SerializeObject(model, new JsonSerializerSettings
+            try
             {
-                Error = (object sender, ErrorEventArgs args) =>
-                {
-                    args.ErrorContext.Handled = true;
-                }
-            });
+                string response = netgiroCart.InsertCart(model);
 
-            var signature = Signature.CalculateSignature(_appSettings.Value.SecretKey, nonce + url + jsonModel);
-
-            request.AddJsonBody(model);
-            request.AddHeader(Constants.Netgiro_AppKey, _appSettings.Value.ApplicationId);
-            request.AddHeader(Constants.Netgiro_Signature, signature);
-            request.AddHeader(Constants.Netgiro_Nonce, nonce);
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
+                return Json(new { success = true, data = response });
+            }
+            catch (Exception ex)
             {
+                // Error handling goes here
                 return Json(new { success = false });
             }
 
-            return Json(new { success = true, data = response.Content });
         }
 
         [HttpPost]
         public ActionResult CheckCart(string transactionId)
         {
-            var client = new RestClient(_appSettings.Value.ApiUrl);
-            var request = new RestRequest("Checkout/CheckCart", Method.POST, DataFormat.Json);
+            INetgiroCart netgiroCart = new NetgiroCartRestClient(_appSettings.Value.ApiUrl, _appSettings.Value.SecretKey, _appSettings.Value.ApplicationId);
 
-            var nonce = "nonce";
-            var url = client.BaseUrl + request.Resource;
-            var model = new CheckCartRequest
+            try
             {
-                TransactionId = transactionId
-            };
-            var jsonModel = JsonConvert.SerializeObject(model, new JsonSerializerSettings
+                string response = netgiroCart.CheckCart(transactionId);
+
+                return Json(new { success = true, data = response });
+            }
+            catch (Exception ex)
             {
-                Error = (object sender, ErrorEventArgs args) =>
-                {
-                    args.ErrorContext.Handled = true;
-                }
-            });
-
-            var signature = Signature.CalculateSignature(_appSettings.Value.SecretKey, nonce + url + jsonModel);
-
-            request.AddJsonBody(model);
-            request.AddHeader(Constants.Netgiro_AppKey, _appSettings.Value.ApplicationId);
-            request.AddHeader(Constants.Netgiro_Signature, signature);
-            request.AddHeader(Constants.Netgiro_Nonce, nonce);
-
-            var response = client.Execute(request);
-
-            if (!response.IsSuccessful)
-            {
+                // Error handling goes here
                 return Json(new { success = false });
             }
-
-            return Json(new { success = true, data = response.Content });
         }
     }
 }

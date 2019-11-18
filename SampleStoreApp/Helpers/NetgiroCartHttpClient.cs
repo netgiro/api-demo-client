@@ -9,13 +9,13 @@ namespace SampleStoreApp.Helpers
 {
     public class NetgiroCartHttpClient : INetgiroCart
     {
-        private string _baseURL;
+        private string _apiURL;
         private string _secretKey;
         private string _applicationId;
 
-        public NetgiroCartHttpClient(string baseURL, string secretKey, string applicationId)
+        public NetgiroCartHttpClient(string apiURL, string secretKey, string applicationId)
         {
-            _baseURL = baseURL;
+            _apiURL = apiURL;
             _secretKey = secretKey;
             _applicationId = applicationId;
         }
@@ -50,7 +50,7 @@ namespace SampleStoreApp.Helpers
 
         private HttpRequestMessage GenerateHttpRequestMessage(object model, string apiAction, string nonce = "nonce")
         {
-            string url = _baseURL.TrimEnd('/') + apiAction;
+            string url = _apiURL.TrimEnd('/') + apiAction;
             string jsonModel = JsonConvert.SerializeObject(model);
             string signature = Signature.CalculateSignature(_secretKey, nonce + url + jsonModel);
 
