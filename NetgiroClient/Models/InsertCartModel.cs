@@ -1,4 +1,4 @@
-namespace SampleStoreApp.Models
+namespace NetgiroClient.Models
 {
     public class InsertCartModel
     {

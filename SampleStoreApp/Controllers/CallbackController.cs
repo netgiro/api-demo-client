@@ -27,7 +27,9 @@ namespace SampleStoreApp.Controllers
                 }
             });
 
-            await this._hubcontext.Clients.All.SendAsync("ReceiveMessage", "user", "Callback received");
+            string transactionId = "asd";
+            
+            await this._hubcontext.Clients.Client(transactionId).SendAsync("ReceiveMessage", "user", "Callback received");
 
             return Ok();
         }

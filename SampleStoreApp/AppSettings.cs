@@ -1,4 +1,4 @@
-﻿namespace SampleStoreApp.Helpers
+﻿namespace SampleStoreApp
 {
     public class AppSettings
     {

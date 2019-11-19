@@ -2,7 +2,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SampleStoreApp.Helpers
+namespace NetgiroClient.Helpers
 {
     public static class Signature
     {

@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace SampleStoreApp.Helpers
+namespace NetgiroClient.Helpers
 {
     public class RandomString
     {

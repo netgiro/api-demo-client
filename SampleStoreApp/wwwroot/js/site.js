@@ -4,8 +4,8 @@
 // Write your JavaScript code.
 
 $(document).ready(function () {
-    $("#clientUsed").val(window.location.pathname.substr(1));
+    $("#clientUsed").val(window.location.pathname == "/" ? "RestSharpClient" : window.location.pathname.substr(1));
     $("#clientUsed").change(function (a) {
-        window.location = a.currentTarget.value == "" ? "RestSharpClient" : a.currentTarget.value;
+        window.location = a.currentTarget.value;
     });
 });

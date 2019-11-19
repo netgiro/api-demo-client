@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using NetgiroClient.Helpers;
+using NetgiroClient.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
-using SampleStoreApp.Models;
+using System.Threading.Tasks;
 
-namespace SampleStoreApp.Helpers
+namespace NetgiroClient
 {
     public class NetgiroCartRestSharpClient : INetgiroCart
     {
@@ -43,7 +44,7 @@ namespace SampleStoreApp.Helpers
 
         public Task<string> CheckCartAsync(string transactionId)
         {
-            RestRequest restRequest = GenerateRestRequest(new CheckCartRequest() { TransactionId = transactionId }, Constants.Netgiro_Api_CheckCartURL, RandomString.Generate());
+            RestRequest restRequest = GenerateRestRequest(new CheckCartRequestModel() { TransactionId = transactionId }, Constants.Netgiro_Api_CheckCartURL, RandomString.Generate());
             return ExecuteRequest(restRequest);
         }
 

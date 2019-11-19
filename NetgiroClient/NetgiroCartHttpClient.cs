@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json;
-using SampleStoreApp.Models;
+﻿using NetgiroClient.Helpers;
+using NetgiroClient.Models;
+using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SampleStoreApp.Helpers
+namespace NetgiroClient
 {
     public class NetgiroCartHttpClient : INetgiroCart
     {
@@ -44,7 +45,7 @@ namespace SampleStoreApp.Helpers
 
         public async Task<string> CheckCartAsync(string transactionId)
         {
-            HttpRequestMessage httpRequestMessage = GenerateHttpRequestMessage(new CheckCartRequest { TransactionId = transactionId }, Constants.Netgiro_Api_CheckCartURL, RandomString.Generate());
+            HttpRequestMessage httpRequestMessage = GenerateHttpRequestMessage(new CheckCartRequestModel { TransactionId = transactionId }, Constants.Netgiro_Api_CheckCartURL, RandomString.Generate());
             return await DoPost(httpRequestMessage);
         }
 

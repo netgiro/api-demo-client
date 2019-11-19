@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using SampleStoreApp.Helpers;
-using SampleStoreApp.Models;
+using NetgiroClient;
+using NetgiroClient.Models;
 using System;
 using System.Threading.Tasks;
 

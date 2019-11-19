@@ -1,4 +1,4 @@
-﻿namespace SampleStoreApp.Helpers
+﻿namespace NetgiroClient
 {
     public class Constants
     {

@@ -1,7 +1,7 @@
-﻿using SampleStoreApp.Models;
+﻿using NetgiroClient.Models;
 using System.Threading.Tasks;
 
-namespace SampleStoreApp.Helpers
+namespace NetgiroClient
 {
     public interface INetgiroCart
     {
