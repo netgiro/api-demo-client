@@ -29,7 +29,7 @@ namespace SampleStoreApp.Helpers
 
         public Task<string> InsertCartAsync(InsertCartModel insertCartModel)
         {
-            RestRequest restRequest = GenerateRestRequest(insertCartModel, "/Checkout/InsertCart");
+            RestRequest restRequest = GenerateRestRequest(insertCartModel, Constants.Netgiro_Api_InsertCartURL, RandomString.Generate());
             return ExecuteRequest(restRequest);
         }
 
@@ -43,11 +43,11 @@ namespace SampleStoreApp.Helpers
 
         public Task<string> CheckCartAsync(string transactionId)
         {
-            RestRequest restRequest = GenerateRestRequest(new CheckCartRequest() { TransactionId = transactionId }, "/Checkout/CheckCart");
+            RestRequest restRequest = GenerateRestRequest(new CheckCartRequest() { TransactionId = transactionId }, Constants.Netgiro_Api_CheckCartURL, RandomString.Generate());
             return ExecuteRequest(restRequest);
         }
 
-        private RestRequest GenerateRestRequest(object model, string apiAction, string nonce = "nonce")
+        private RestRequest GenerateRestRequest(object model, string apiAction, string nonce)
         {
             var request = new RestRequest(apiAction, Method.POST, DataFormat.Json);
 

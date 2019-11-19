@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using SampleStoreApp.Helpers;
 using SampleStoreApp.Models;
 using System;
@@ -10,9 +11,9 @@ namespace SampleStoreApp.Controllers
     {
         private readonly AppSettings _appSettings;
 
-        public HttpClientController(AppSettings appSettings)
+        public HttpClientController(IOptions<AppSettings> appSettings)
         {
-            _appSettings = appSettings;
+            _appSettings = appSettings.Value;
         }
 
         public IActionResult Index()

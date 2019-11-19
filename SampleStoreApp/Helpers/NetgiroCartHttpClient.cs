@@ -30,7 +30,7 @@ namespace SampleStoreApp.Helpers
 
         public async Task<string> InsertCartAsync(InsertCartModel insertCartModel)
         {
-            HttpRequestMessage httpRequestMessage = GenerateHttpRequestMessage(insertCartModel, "/Checkout/InsertCart");
+            HttpRequestMessage httpRequestMessage = GenerateHttpRequestMessage(insertCartModel, Constants.Netgiro_Api_InsertCartURL, RandomString.Generate());
             return await DoPost(httpRequestMessage);
         }
 
@@ -44,11 +44,11 @@ namespace SampleStoreApp.Helpers
 
         public async Task<string> CheckCartAsync(string transactionId)
         {
-            HttpRequestMessage httpRequestMessage = GenerateHttpRequestMessage(new CheckCartRequest { TransactionId = transactionId }, "/Checkout/CheckCart");
+            HttpRequestMessage httpRequestMessage = GenerateHttpRequestMessage(new CheckCartRequest { TransactionId = transactionId }, Constants.Netgiro_Api_CheckCartURL, RandomString.Generate());
             return await DoPost(httpRequestMessage);
         }
 
-        private HttpRequestMessage GenerateHttpRequestMessage(object model, string apiAction, string nonce = "nonce")
+        private HttpRequestMessage GenerateHttpRequestMessage(object model, string apiAction, string nonce)
         {
             // we don't know if an URL in config has a slash at the end of it, so we remove it from URL, and always include it at the start of path
             string url = _apiURL.TrimEnd('/') + apiAction;
