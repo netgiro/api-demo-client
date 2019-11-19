@@ -50,6 +50,7 @@ namespace SampleStoreApp.Helpers
 
         private HttpRequestMessage GenerateHttpRequestMessage(object model, string apiAction, string nonce = "nonce")
         {
+            // we don't know if an URL in config has a slash at the end of it, so we remove it from URL, and always include it at the start of path
             string url = _apiURL.TrimEnd('/') + apiAction;
             string jsonModel = JsonConvert.SerializeObject(model);
             string signature = Signature.CalculateSignature(_secretKey, nonce + url + jsonModel);

@@ -34,6 +34,7 @@ namespace SampleStoreApp.Helpers
         {
             var request = new RestRequest(apiAction, Method.POST, DataFormat.Json);
 
+            // we don't know if an URL in config has a slash at the end of it, so we remove it from URL, and always include it at the start of path
             var url = _apiURL.TrimEnd('/') + request.Resource;
             var jsonModel = JsonConvert.SerializeObject(model, new JsonSerializerSettings
             {

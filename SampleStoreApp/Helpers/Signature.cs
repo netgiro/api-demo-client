@@ -6,6 +6,11 @@ namespace SampleStoreApp.Helpers
 {
     public static class Signature
     {
+        /// <summary>
+        /// Signature represents computed hash that both client and Netgíró have to create so other can verify if it came from authenticated source.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns>HMACSHA256 computed hash</returns>
         public static string CalculateSignature(params string[] args)
         {
             string input = string.Join("", args);
