@@ -22,7 +22,7 @@ namespace SampleStoreApp.Helpers
 
         public string InsertCart(InsertCartModel insertCartModel)
         {
-            Task<string> insertCartTask = Task.Run(() => InsertCartAsync(insertCartModel));
+            Task<string> insertCartTask = InsertCartAsync(insertCartModel);
             insertCartTask.Wait();
 
             return insertCartTask.Result;
@@ -36,7 +36,7 @@ namespace SampleStoreApp.Helpers
 
         public string CheckCart(string transactionId)
         {
-            Task<string> checkCartTask = Task.Run(() => CheckCartAsync(transactionId));
+            Task<string> checkCartTask = CheckCartAsync(transactionId);
             checkCartTask.Wait();
 
             return checkCartTask.Result;

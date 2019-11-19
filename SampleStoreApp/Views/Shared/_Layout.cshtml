@@ -17,11 +17,16 @@
             <div class="container">
 
                 <a class="navbar-brand" asp-area="" asp-controller="" asp-action=""><img src="https://raw.githubusercontent.com/netgiro/netgiro.github.io/master/images/Netgiro_Logo_100.png" /></a>
-                <a class="navbar-brand" asp-area="" asp-controller="RestClient" asp-action="Index">RestClient</a>
-                <a class="navbar-brand" asp-area="" asp-controller="HttpClient" asp-action="Index">HttpClient</a>
             </div>
         </nav>
     </header>
+    <div class="text-center">
+        Client is using
+        <select id="clientUsed">
+            <option value="RestSharpClient">RestSharp</option>
+            <option value="HttpClient">HttpClient</option>
+        </select>
+    </div>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
