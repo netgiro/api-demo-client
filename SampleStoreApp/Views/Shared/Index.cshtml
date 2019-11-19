@@ -1,7 +1,13 @@
 ﻿@model InsertCartModel
 <div class="container">
     <div class="row justify-content-center align-items-center center-container">
-        <h2 class="mb-5">Demo shop</h2>
+        <h2 class="mb-5">
+            Demo shop using
+            <select id="clientUsed">
+                <option value="RestSharpClient">RestSharp</option>
+                <option value="HttpClient">HttpClient</option>
+            </select>
+        </h2>
         <form class="col-12" id="form-container">
             <div class="form-group">
                 <label for="amount">Amount</label>

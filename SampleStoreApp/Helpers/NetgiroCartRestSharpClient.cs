@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
 using SampleStoreApp.Models;
@@ -20,11 +21,27 @@ namespace SampleStoreApp.Helpers
 
         public string InsertCart(InsertCartModel insertCartModel)
         {
+            Task<string> insertCartTask = InsertCartAsync(insertCartModel);
+            insertCartTask.Wait();
+
+            return insertCartTask.Result;
+        }
+
+        public Task<string> InsertCartAsync(InsertCartModel insertCartModel)
+        {
             RestRequest restRequest = GenerateRestRequest(insertCartModel, "/Checkout/InsertCart");
             return ExecuteRequest(restRequest);
         }
 
         public string CheckCart(string transactionId)
+        {
+            Task<string> checkCartTask = CheckCartAsync(transactionId);
+            checkCartTask.Wait();
+
+            return checkCartTask.Result;
+        }
+
+        public Task<string> CheckCartAsync(string transactionId)
         {
             RestRequest restRequest = GenerateRestRequest(new CheckCartRequest() { TransactionId = transactionId }, "/Checkout/CheckCart");
             return ExecuteRequest(restRequest);
@@ -54,9 +71,9 @@ namespace SampleStoreApp.Helpers
             return request;
         }
 
-        private string ExecuteRequest(RestRequest restRequest)
+        private async Task<string> ExecuteRequest(RestRequest restRequest)
         {
-            var response = (new RestClient(_apiURL)).Execute(restRequest);
+            IRestResponse response = await (new RestClient(_apiURL)).ExecuteTaskAsync(restRequest);
 
             if (response.IsSuccessful)
             {

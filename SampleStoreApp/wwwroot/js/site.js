@@ -6,6 +6,6 @@
 $(document).ready(function () {
     $("#clientUsed").val(window.location.pathname.substr(1));
     $("#clientUsed").change(function (a) {
-        window.location = a.currentTarget.value;
+        window.location = a.currentTarget.value == "" ? "RestSharpClient" : a.currentTarget.value;
     });
 });

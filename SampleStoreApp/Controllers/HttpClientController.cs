@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using SampleStoreApp.Helpers;
 using SampleStoreApp.Models;
 using System;
+using System.Threading.Tasks;
 
 namespace SampleStoreApp.Controllers
 {
     public class HttpClientController : Controller
     {
-        private readonly IOptions<AppSettings> _appSettings;
+        private readonly AppSettings _appSettings;
 
-        public HttpClientController(IOptions<AppSettings> appSettings)
+        public HttpClientController(AppSettings appSettings)
         {
             _appSettings = appSettings;
         }
@@ -23,15 +23,15 @@ namespace SampleStoreApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult InsertCart(InsertCartModel model)
+        public async Task<IActionResult> InsertCart(InsertCartModel model)
         {
             model.CallbackUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}{Url.Action(nameof(CallbackController.Callback))}";
 
-            INetgiroCart netgiroCart = new NetgiroCartHttpClient(_appSettings.Value.ApiUrl, _appSettings.Value.SecretKey, _appSettings.Value.ApplicationId);
+            INetgiroCart netgiroCart = new NetgiroCartHttpClient(_appSettings.ApiUrl, _appSettings.SecretKey, _appSettings.ApplicationId);
 
             try
             {
-                string response = netgiroCart.InsertCart(model);
+                string response = await netgiroCart.InsertCartAsync(model);
 
                 return Json(new { success = true, data = response });
             }
@@ -42,13 +42,13 @@ namespace SampleStoreApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult CheckCart(string transactionId)
+        public async Task<IActionResult> CheckCart(string transactionId)
         {
-            INetgiroCart netgiroCart = new NetgiroCartHttpClient(_appSettings.Value.ApiUrl, _appSettings.Value.SecretKey, _appSettings.Value.ApplicationId);
+            INetgiroCart netgiroCart = new NetgiroCartHttpClient(_appSettings.ApiUrl, _appSettings.SecretKey, _appSettings.ApplicationId);
 
             try
             {
-                string response = netgiroCart.CheckCart(transactionId);
+                string response = await netgiroCart.CheckCartAsync(transactionId);
 
                 return Json(new { success = true, data = response });
             }
