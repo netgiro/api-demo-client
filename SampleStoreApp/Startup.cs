@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SampleStoreApp.Hubs;
+using SampleStoreApp.SignalR;
 using System.IO;
 
 namespace SampleStoreApp
@@ -28,6 +28,8 @@ namespace SampleStoreApp
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
+            services.AddSingleton<IClientManager, ClientManager>();
 
             services.AddSignalR();
         }

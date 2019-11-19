@@ -122,6 +122,9 @@
                     var model = $.parseJSON(result.data);
                     var transactionId = model.TransactionId;
 
+                    console.log(transactionId);
+                    connection.invoke('RegisterTransactionId', transactionId);
+
                     logMessage("Cart created!");
                     checkCart(transactionId);
                     return false;

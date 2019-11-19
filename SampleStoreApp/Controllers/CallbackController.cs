@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using SampleStoreApp.Hubs;
+using SampleStoreApp.SignalR;
 using System.Threading.Tasks;
 
 namespace SampleStoreApp.Controllers
@@ -10,28 +10,25 @@ namespace SampleStoreApp.Controllers
     public class CallbackController : Controller
     {
         private readonly IHubContext<PaymentHub> _hubcontext;
+        private readonly IClientManager _clientManager;
 
-        public CallbackController(IHubContext<PaymentHub> hubcontext)
+        public CallbackController(IHubContext<PaymentHub> hubcontext, IClientManager clientManager)
         {
             _hubcontext = hubcontext;
+            _clientManager = clientManager;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Callback(object obj)
+        public async Task<ActionResult> Callback([FromBody] DummyClass data)
         {
-            var jsonModel = JsonConvert.SerializeObject(obj, new JsonSerializerSettings
-            {
-                Error = (object sender, ErrorEventArgs args) =>
-                {
-                    args.ErrorContext.Handled = true;
-                }
-            });
-
-            string transactionId = "asd";
-            
-            await this._hubcontext.Clients.Client(transactionId).SendAsync("ReceiveMessage", "user", "Callback received");
+            await this._hubcontext.Clients.Client(_clientManager.GetClientByTransactionId(data.TransactionId)).SendAsync("ReceiveMessage", "user", "Callback received");
 
             return Ok();
         }
+    }
+
+    public class DummyClass
+    {
+        public string TransactionId { get; set; }
     }
 }
