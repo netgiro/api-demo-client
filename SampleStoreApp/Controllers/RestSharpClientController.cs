@@ -6,11 +6,11 @@ using System;
 
 namespace SampleStoreApp.Controllers
 {
-    public class RestClientController : Controller
+    public class RestSharpClientController : Controller
     {
         private readonly IOptions<AppSettings> _appSettings;
 
-        public RestClientController(IOptions<AppSettings> appSettings)
+        public RestSharpClientController(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings;
         }
@@ -27,7 +27,7 @@ namespace SampleStoreApp.Controllers
         {
             model.CallbackUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}{Url.Action(nameof(CallbackController.Callback))}";
 
-            INetgiroCart netgiroCart = new NetgiroCartRestClient(_appSettings.Value.ApiUrl, _appSettings.Value.SecretKey, _appSettings.Value.ApplicationId);
+            INetgiroCart netgiroCart = new NetgiroCartRestSharpClient(_appSettings.Value.ApiUrl, _appSettings.Value.SecretKey, _appSettings.Value.ApplicationId);
 
             try
             {
@@ -44,7 +44,7 @@ namespace SampleStoreApp.Controllers
         [HttpPost]
         public ActionResult CheckCart(string transactionId)
         {
-            INetgiroCart netgiroCart = new NetgiroCartRestClient(_appSettings.Value.ApiUrl, _appSettings.Value.SecretKey, _appSettings.Value.ApplicationId);
+            INetgiroCart netgiroCart = new NetgiroCartRestSharpClient(_appSettings.Value.ApiUrl, _appSettings.Value.SecretKey, _appSettings.Value.ApplicationId);
 
             try
             {

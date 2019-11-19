@@ -5,13 +5,13 @@ using SampleStoreApp.Models;
 
 namespace SampleStoreApp.Helpers
 {
-    public class NetgiroCartRestClient : INetgiroCart
+    public class NetgiroCartRestSharpClient : INetgiroCart
     {
         private string _apiURL;
         private string _secretKey;
         private string _applicationId;
 
-        public NetgiroCartRestClient(string apiURL, string secretKey, string applicationId)
+        public NetgiroCartRestSharpClient(string apiURL, string secretKey, string applicationId)
         {
             _apiURL = apiURL;
             _secretKey = secretKey;
