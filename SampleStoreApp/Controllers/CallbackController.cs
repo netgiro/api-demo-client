@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using NetgiroClient.Models;
 using SampleStoreApp.SignalR;
 using System.Threading.Tasks;
 
@@ -17,16 +18,11 @@ namespace SampleStoreApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Callback([FromBody] DummyClass data)
+        public async Task<ActionResult> Callback([FromBody] PaymentResponse paymentResponse)
         {
-            await this._hubcontext.Clients.Client(_clientManager.GetClientByTransactionId(data.TransactionId)).SendAsync("ReceiveMessage", "user", "Callback received");
+            await this._hubcontext.Clients.Client(_clientManager.GetClientByTransactionId(paymentResponse.PaymentInfo.TransactionId)).SendAsync("ReceiveMessage", "user", "Callback received");
 
             return Ok();
         }
-    }
-
-    public class DummyClass
-    {
-        public string TransactionId { get; set; }
     }
 }
