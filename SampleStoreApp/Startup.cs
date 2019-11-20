@@ -1,4 +1,3 @@
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -7,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SampleStoreApp.Hubs;
-using SampleStoreApp.Models;
+using SampleStoreApp.SignalR;
+using System.IO;
 
 namespace SampleStoreApp
 {
@@ -29,6 +28,8 @@ namespace SampleStoreApp
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
+            services.AddSingleton<IClientManager, ClientManager>();
 
             services.AddSignalR();
         }
@@ -83,7 +84,8 @@ namespace SampleStoreApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=RestSharpClient}/{action=Index}/{id?}");
+
                 endpoints.MapHub<PaymentHub>("/paymentHub");
             });
         }
