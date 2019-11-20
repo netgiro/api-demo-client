@@ -14,7 +14,7 @@ namespace SampleStoreApp.SignalR
 
         public void RegisterTransactionId(string transactionId)
         {
-            _clientManager.InsertNewClient(Context.ConnectionId, transactionId);
+            _clientManager.InsertNewClient(transactionId, Context.ConnectionId);
         }
 
         public async Task SendMessage(string user, string message)
