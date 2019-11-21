@@ -22,19 +22,9 @@
                 <input type="text" class="form-control" id="reference" name="reference">
             </div>
             <div class="form-group">
-                <label for="identifier" class="mb-1">Phone number</label><br />
-                <div class="radio-group">
-                    <input type="radio" name="identifier" id="radio1" value="7700001" checked>
-                    <label for="radio1" class="font-weight-normal"> Simulates cancel (7700001)</label>
-                </div>
-                <div class="radio-group">
-                    <input type="radio" name="identifier" id="radio2" value="7700002">
-                    <label for="radio2" class="font-weight-normal"> Simulates success (7700002)</label>
-                </div>
-                <div class="radio-group">
-                    <input type="radio" name="identifier" id="radio3" value="7700003">
-                    <label for="radio3" class="font-weight-normal"> Simulates no action taken by user (7700003)</label>
-                </div>
+                <label for="identifier" class="mb-1">Phone number</label>
+                <input type="text" class="form-control" id="identifier" name="identifier">
+
             </div>
             <div class="form-group mt-5">
                 <button type="submit" value="submit" href="@Url.Action("InsertCart")" id="buyBtn" class="btn-secondary m-auto">
@@ -116,7 +106,7 @@
         $.ajax({
             url: $("#buyBtn").attr("href"),
             type: "POST",
-            data: { amount: $("#amount").val(), description: $("#description").val(), reference: $("#reference").val(), customerId: $("input[name='identifier']:checked").val() },
+            data: { amount: $("#amount").val(), description: $("#description").val(), reference: $("#reference").val(), customerId: $("#identifier").val() },
             success: function (result) {
                 if (result.success) {
                     var model = $.parseJSON(result.data);
