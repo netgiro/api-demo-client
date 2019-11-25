@@ -146,7 +146,7 @@
             success: function (result) {
                 if (result.success) {
                     logMessage("Cart canceled by provider!");
-                    checkCart(transactionId);
+                    checkCart($("#cartTransactionId").val());
                     return false;
 
                 } else {
