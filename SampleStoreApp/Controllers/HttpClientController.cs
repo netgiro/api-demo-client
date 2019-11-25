@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using NetgiroClient;
 using NetgiroClient.Models;
-using System;
-using System.Threading.Tasks;
 
 namespace SampleStoreApp.Controllers
 {
@@ -26,7 +26,7 @@ namespace SampleStoreApp.Controllers
         [HttpPost]
         public async Task<IActionResult> InsertCart(InsertCartModel model)
         {
-            model.CallbackUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}{Url.Action(nameof(CallbackController.Callback))}";
+            model.CallbackUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}{Url.Action(nameof(CallbackController.Callback), "Callback")}";
 
             INetgiroCart netgiroCart = new NetgiroCartHttpClient(_appSettings.ApiUrl, _appSettings.SecretKey, _appSettings.ApplicationId);
 
