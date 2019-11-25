@@ -1,9 +1,9 @@
-﻿using NetgiroClient.Helpers;
+﻿using System.Threading.Tasks;
+using NetgiroClient.Helpers;
 using NetgiroClient.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
-using System.Threading.Tasks;
 
 namespace NetgiroClient
 {
@@ -48,6 +48,20 @@ namespace NetgiroClient
             return ExecuteRequest(restRequest);
         }
 
+        public bool CancelCart(string transactionId)
+        {
+            Task<bool> cancelCartTask = CancelCartAsync(transactionId);
+            cancelCartTask.Wait();
+
+            return cancelCartTask.Result;
+        }
+
+        public Task<bool> CancelCartAsync(string transactionId)
+        {
+            RestRequest restRequest = GenerateRestRequest(new CancelCartRequestModel() { TransactionId = transactionId }, Constants.Netgiro_Api_CancelCartURL, RandomString.Generate());
+            return ExecuteRequestBool(restRequest);
+        }
+
         private RestRequest GenerateRestRequest(object model, string apiAction, string nonce)
         {
             var request = new RestRequest(apiAction, Method.POST, DataFormat.Json);
@@ -82,6 +96,13 @@ namespace NetgiroClient
             }
 
             throw response.ErrorException;
+        }
+
+        private async Task<bool> ExecuteRequestBool(RestRequest restRequest)
+        {
+            IRestResponse response = await (new RestClient(_apiURL)).ExecuteTaskAsync(restRequest);
+
+            return response.IsSuccessful;
         }
     }
 }

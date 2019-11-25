@@ -1,10 +1,10 @@
-﻿using NetgiroClient.Helpers;
-using NetgiroClient.Models;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using NetgiroClient.Helpers;
+using NetgiroClient.Models;
+using Newtonsoft.Json;
 
 namespace NetgiroClient
 {
@@ -49,6 +49,12 @@ namespace NetgiroClient
             return await DoPost(httpRequestMessage);
         }
 
+        public async Task<bool> CancelCartAsync(string transactionId)
+        {
+            HttpRequestMessage httpRequestMessage = GenerateHttpRequestMessage(new CheckCartRequestModel { TransactionId = transactionId }, Constants.Netgiro_Api_CancelCartURL, RandomString.Generate());
+            return await DoPostBool(httpRequestMessage);
+        }
+
         private HttpRequestMessage GenerateHttpRequestMessage(object model, string apiAction, string nonce)
         {
             // we don't know if an URL in config has a slash at the end of it, so we remove it from URL, and always include it at the start of path
@@ -75,6 +81,13 @@ namespace NetgiroClient
             }
 
             throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
+        }
+
+        private async Task<bool> DoPostBool(HttpRequestMessage httpRequestMessage)
+        {
+            HttpResponseMessage httpResponseMessage = await (new HttpClient()).SendAsync(httpRequestMessage);
+
+            return httpResponseMessage.IsSuccessStatusCode;
         }
     }
 }

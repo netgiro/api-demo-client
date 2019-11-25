@@ -1,6 +1,6 @@
 namespace NetgiroClient.Models
 {
-    public class CancelCartRequestModel
+    public class CheckCartRequestModel
     {
         public string TransactionId { get; set; }
     }

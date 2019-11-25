@@ -47,13 +47,14 @@
         No info available.
     </div>
 </div>
-
+<input type="hidden" id="cartTransactionId" />
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 
 <script>
     var logger = document.getElementById("logContainer");
     var intervalHandler = -1;
+    var cartTransactionId = $("#cartTransactionId");
 
     function changeBuyBtnState(loadingMode) {
         if (loadingMode) {
@@ -80,10 +81,13 @@
     }
 
     $("#cancelBtn").on("click", function (e) {
+
+        cancelCart($("#cartTransactionId").val());
         changeBuyBtnState(false);
         clearInterval(intervalHandler);
         logMessage("Stoped by cancel button!");
     });
+
 
     $("#buyBtn").on("click", function (e) {
         e.preventDefault();
@@ -100,6 +104,7 @@
         postFormData();
     });
 
+
     function postFormData() {
         changeBuyBtnState(true);
         logMessage("Creating cart...");
@@ -111,8 +116,8 @@
                 if (result.success) {
                     var model = $.parseJSON(result.data);
                     var transactionId = model.TransactionId;
+                    $("#cartTransactionId").val(model.TransactionId);
 
-                    console.log(transactionId);
                     connection.invoke('RegisterTransactionId', transactionId);
 
                     logMessage("Cart created!");
@@ -131,6 +136,32 @@
             }
         });
     }
+
+    function cancelCart() {
+        logMessage("Canceling cart...");
+        $.ajax({
+            url: "@Url.Action("CancelCart")",
+            type: "POST",
+            data: { transactionId: $("#cartTransactionId").val() },
+            success: function (result) {
+                if (result.success) {
+                    logMessage("Cart canceled by provider!");
+                    checkCart(transactionId);
+                    return false;
+
+                } else {
+                    changeBuyBtnState(true);
+                    logMessage("Error on cart canceling!");
+                    return false;
+                }
+            },
+            error: function (result) {
+                changeBuyBtnState(true);
+                logMessage("Error on cart creation!");
+            }
+        });
+    }
+
 
     function checkCart(data) {
         if (data == undefined) {

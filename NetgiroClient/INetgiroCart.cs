@@ -1,5 +1,5 @@
-﻿using NetgiroClient.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using NetgiroClient.Models;
 
 namespace NetgiroClient
 {
@@ -32,5 +32,7 @@ namespace NetgiroClient
         /// <param name="transactionId"></param>
         /// <returns>JSON data</returns>
         public Task<string> CheckCartAsync(string transactionId);
+
+        public Task<bool> CancelCartAsync(string transactionId);
     }
 }

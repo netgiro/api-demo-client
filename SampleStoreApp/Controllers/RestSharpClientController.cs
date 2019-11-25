@@ -49,7 +49,24 @@ namespace SampleStoreApp.Controllers
 
             try
             {
-                string response = await netgiroCart.CheckCartAsync(transactionId);
+                var response = await netgiroCart.CheckCartAsync(transactionId);
+
+                return Json(new { success = true, data = response });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, data = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelCart(string transactionId)
+        {
+            INetgiroCart netgiroCart = new NetgiroCartRestSharpClient(_appSettings.ApiUrl, _appSettings.SecretKey, _appSettings.ApplicationId);
+
+            try
+            {
+                var response = await netgiroCart.CancelCartAsync(transactionId);
 
                 return Json(new { success = true, data = response });
             }
