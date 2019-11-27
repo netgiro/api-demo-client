@@ -27,7 +27,7 @@
 
             </div>
             <div class="form-group mt-5">
-                <button type="submit" value="submit" href="@Url.Action("InsertCart")" id="buyBtn" class="btn-secondary m-auto">
+                <button type="submit" value="submit" href="@Url.Action("InsertCart")" id="buyBtn" class="btn-primary m-auto">
                     <span id="loaningSpan" class="d-none">
                         <span class="spinner-border spinner-border-sm"></span>
                         Loading..
@@ -40,10 +40,20 @@
             </div>
         </form>
     </div>
+    <div id="mobileAppContainer" class="row justify-content-center align-items-center center-container mt-3" style="border: 1px solid black;visibility:hidden">
+        <h4 class="mt-2">Customer mobile app simulator</h4>
+        <div class="m-2">
+            <button type="button" id="confirmRequestBtn" class="btn-info m-auto">Confirm request</button>
+
+        </div>
+        <div class="m-2">
+            <button type="button" id="rejectRequestBtn" class="btn-info m-auto">Reject request</button>
+        </div>
+    </div>
 </div>
 <div class="right-container">
     <h5 class="p-3 bb-inset">Log info</h5>
-    <div class="p-3" id="logContainer">
+    <div class="p-3 log-container" id="logContainer">
         No info available.
     </div>
 </div>
@@ -56,16 +66,18 @@
     var intervalHandler = -1;
     var cartTransactionId = $("#cartTransactionId");
 
-    function changeBuyBtnState(loadingMode) {
-        if (loadingMode) {
+    function disableBuyBtn(disable) {
+        if (disable) {
             $("#buyBtn").prop('disabled', true);
             $("#loaningSpan").removeClass("d-none");
             $("#normalSpan").addClass("d-none");
+            $("#mobileAppContainer").css("visibility", "visible");
         }
         else {
             $("#buyBtn").prop('disabled', false);
             $("#loaningSpan").addClass("d-none");
             $("#normalSpan").removeClass("d-none");
+            $("#mobileAppContainer").css("visibility", "hidden");
         }
     }
 
@@ -80,14 +92,14 @@
         }
     }
 
-    $("#cancelBtn").on("click", function (e) {
-
-        cancelCart($("#cartTransactionId").val());
-        changeBuyBtnState(false);
-        clearInterval(intervalHandler);
-        logMessage("Stoped by cancel button!");
-    });
-
+    function showMobileAppContainer(show) {
+        if (show) {
+            $("#mobileAppContainer").toggle();
+        }
+        else {
+            $("#mobileAppContainer").toggle();
+        }
+    }
 
     $("#buyBtn").on("click", function (e) {
         e.preventDefault();
@@ -104,9 +116,27 @@
         postFormData();
     });
 
+    $("#cancelBtn").on("click", function (e) {
+
+        cancelCart($("#cartTransactionId").val());
+        disableBuyBtn(false);
+        window.clearInterval(intervalHandler);
+        logMessage("Stoped by cancel button!");
+    });
+
+    $("#confirmRequestBtn").on("click", function (e) {
+        confirmRequest();
+        disableBuyBtn(false);
+    });
+
+    $("#rejectRequestBtn").on("click", function (e) {
+        rejectRequest();
+        disableBuyBtn(false);
+    });
+
 
     function postFormData() {
-        changeBuyBtnState(true);
+        disableBuyBtn(true);
         logMessage("Creating cart...");
         $.ajax({
             url: $("#buyBtn").attr("href"),
@@ -122,16 +152,14 @@
 
                     logMessage("Cart created!");
                     checkCart(transactionId);
-                    return false;
 
                 } else {
-                    changeBuyBtnState(false);
+                    disableBuyBtn(false);
                     logMessage("Error on cart creation!");
-                    return false;
                 }
             },
             error: function (result) {
-                changeBuyBtnState(false);
+                disableBuyBtn(false);
                 logMessage("Error on cart creation!");
             }
         });
@@ -146,18 +174,13 @@
             success: function (result) {
                 if (result.success) {
                     logMessage("Cart canceled by provider!");
-                    checkCart($("#cartTransactionId").val());
-                    return false;
-
+                    window.clearInterval(intervalHandler);
                 } else {
-                    changeBuyBtnState(true);
                     logMessage("Error on cart canceling!");
-                    return false;
                 }
             },
             error: function (result) {
-                changeBuyBtnState(true);
-                logMessage("Error on cart creation!");
+                logMessage("Error on cart canceling!");
             }
         });
     }
@@ -179,15 +202,16 @@
                     if (result.success) {
                         var model = $.parseJSON(result.data);
                         if (model.Success && model.PaymentSuccessful) {
-                            changeBuyBtnState(false);
-                            clearInterval(intervalHandler);
+                            disableBuyBtn(false);
+                            window.clearInterval(intervalHandler);
                             logMessage("SUCCESS! Loan created.");
                         }
                         else {
-                            if (model.ResultCode == 10423) {
-                                changeBuyBtnState(false);
-                                clearInterval(intervalHandler);
-                                logMessage("Sale canceled by customer!");
+                            // These are result codes when cart is canceled
+                            if (model.ResultCode == 10201) {
+                                disableBuyBtn(false);
+                                window.clearInterval(intervalHandler);
+                                logMessage("Cart canceled!");
 
                             }
                             else if (model.Message != null && model.Message != "") {
@@ -200,8 +224,8 @@
                     }
                 },
                 error: function (result) {
-                    changeBuyBtnState(false);
-                    clearInterval(intervalHandler);
+                    disableBuyBtn(false);
+                    window.clearInterval(intervalHandler);
                     logMessage("Error on checking cart!");
                 }
             });
@@ -209,6 +233,50 @@
 
         intervalHandler = window.setInterval(checkingFunction, 3000);
     }
+
+
+     function confirmRequest() {
+        logMessage("Customer initiated confirm request");
+
+        $.ajax({
+            url: "@Url.Action("ConfirmCart")",
+            type: "POST",
+            data: { transactionId: $("#cartTransactionId").val(), confirm: true },
+            success: function (result) {
+                if (result.success) {
+                    logMessage("Cart confirmed by customer!");
+                } else {
+                    logMessage("Error on confirm request!");
+                    window.clearInterval(intervalHandler);
+                }
+            },
+            error: function (result) {
+                logMessage("Error on confirm request!");
+            }
+        });
+    }
+
+     function rejectRequest() {
+        logMessage("Customer initiated reject request");
+        $.ajax({
+            url: "@Url.Action("ConfirmCart")",
+            type: "POST",
+            data: { transactionId: $("#cartTransactionId").val(), confirm: false },
+            success: function (result) {
+                if (result.success) {
+                    logMessage("Cart rejected by customer!");
+
+                } else {
+                    logMessage("Error on confirm request!");
+                }
+            },
+            error: function (result) {
+                logMessage("Error on reject request!");
+            }
+        });
+    }
+
+
 
     var connection = new signalR.HubConnectionBuilder().withUrl("/paymentHub").build();
 

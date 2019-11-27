@@ -75,5 +75,22 @@ namespace SampleStoreApp.Controllers
                 return Json(new { success = false, data = ex.Message });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmCart(string transactionId, bool confirm)
+        {
+            INetgiroCart netgiroCart = new NetgiroCartRestSharpClient(_appSettings.ApiUrl, _appSettings.SecretKey, _appSettings.ApplicationId);
+
+            try
+            {
+                var response = await netgiroCart.ConfirmCartAsync(transactionId, confirm);
+
+                return Json(new { success = true, data = response });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, data = ex.Message });
+            }
+        }
     }
 }

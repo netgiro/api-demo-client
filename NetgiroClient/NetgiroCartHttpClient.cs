@@ -54,6 +54,20 @@ namespace NetgiroClient
             HttpRequestMessage httpRequestMessage = GenerateHttpRequestMessage(new CheckCartRequestModel { TransactionId = transactionId }, Constants.Netgiro_Api_CancelCartURL, RandomString.Generate());
             return await DoPostBool(httpRequestMessage);
         }
+        public bool ConfirmCart(string transactionId, bool accept)
+        {
+            Task<bool> cancelCartTask = ConfirmCartAsync(transactionId, accept);
+            cancelCartTask.Wait();
+
+            return cancelCartTask.Result;
+        }
+
+        public async Task<bool> ConfirmCartAsync(string transactionId, bool accept)
+        {
+            var identifier = accept ? "1" : "0";
+            HttpRequestMessage httpRequestMessage = GenerateHttpRequestMessage(new ConfirmCartRequestModel() { TransactionId = transactionId, Identifier = identifier }, Constants.Netgiro_Api_ConfirmCartURL, RandomString.Generate());
+            return await DoPostBool(httpRequestMessage);
+        }
 
         private HttpRequestMessage GenerateHttpRequestMessage(object model, string apiAction, string nonce)
         {

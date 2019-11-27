@@ -62,6 +62,21 @@ namespace NetgiroClient
             return ExecuteRequestBool(restRequest);
         }
 
+        public bool ConfirmCart(string transactionId, bool accept)
+        {
+            Task<bool> cancelCartTask = ConfirmCartAsync(transactionId, accept);
+            cancelCartTask.Wait();
+
+            return cancelCartTask.Result;
+        }
+
+        public Task<bool> ConfirmCartAsync(string transactionId, bool accept)
+        {
+            var identifier = accept ? "1" : "0";
+            RestRequest restRequest = GenerateRestRequest(new ConfirmCartRequestModel() { TransactionId = transactionId, Identifier = identifier }, Constants.Netgiro_Api_ConfirmCartURL, RandomString.Generate());
+            return ExecuteRequestBool(restRequest);
+        }
+
         private RestRequest GenerateRestRequest(object model, string apiAction, string nonce)
         {
             var request = new RestRequest(apiAction, Method.POST, DataFormat.Json);

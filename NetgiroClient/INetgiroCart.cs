@@ -34,5 +34,6 @@ namespace NetgiroClient
         public Task<string> CheckCartAsync(string transactionId);
 
         public Task<bool> CancelCartAsync(string transactionId);
+        public Task<bool> ConfirmCartAsync(string transactionId, bool accept);
     }
 }
