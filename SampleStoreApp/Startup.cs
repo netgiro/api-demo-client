@@ -29,8 +29,7 @@ namespace SampleStoreApp
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
-                       .AllowAnyHeader()
-                       .AllowCredentials();
+                       .AllowAnyHeader();
             }));
 
             services.AddSingleton<IClientManager, ClientManager>();
