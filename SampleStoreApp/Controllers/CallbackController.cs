@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using NetgiroClient;
@@ -21,7 +20,6 @@ namespace SampleStoreApp.Controllers
         }
 
         [HttpPost]
-        [EnableCors("CallbackPolicy")]
         public async Task<ActionResult> Callback([FromBody] PaymentResponse paymentResponse)
         {
             var appKey = this.Request.Headers[Constants.Netgiro_AppKey];
