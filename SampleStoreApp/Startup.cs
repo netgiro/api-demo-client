@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -7,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SampleStoreApp.SignalR;
-using System.IO;
 
 namespace SampleStoreApp
 {
@@ -28,6 +28,13 @@ namespace SampleStoreApp
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
+            services.AddCors(o => o.AddPolicy("CallbackPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
 
             services.AddSingleton<IClientManager, ClientManager>();
 
@@ -73,12 +80,13 @@ namespace SampleStoreApp
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseAuthorization(); 
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
