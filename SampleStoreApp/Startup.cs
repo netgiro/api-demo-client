@@ -44,6 +44,8 @@ namespace SampleStoreApp
 
             app.UseDeveloperExceptionPage();
 
+            app.UseHsts();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
