@@ -143,8 +143,8 @@
             type: "POST",
             data: { amount: $("#amount").val(), description: $("#description").val(), reference: $("#reference").val(), customerId: $("#identifier").val() },
             success: function (result) {
-                if (result.success) {
-                    var model = $.parseJSON(result.data);
+                var model = $.parseJSON(result.data);
+                if (model.Success) {
                     var transactionId = model.TransactionId;
                     $("#cartTransactionId").val(model.TransactionId);
 
@@ -172,7 +172,8 @@
             type: "POST",
             data: { transactionId: $("#cartTransactionId").val() },
             success: function (result) {
-                if (result.success) {
+                var model = $.parseJSON(result.data);
+                if (model.Success) {
                     logMessage("Cart canceled by provider!");
                     window.clearInterval(intervalHandler);
                 } else {
@@ -243,7 +244,8 @@
             type: "POST",
             data: { transactionId: $("#cartTransactionId").val(), confirm: true },
             success: function (result) {
-                if (result.success) {
+                var model = $.parseJSON(result.data);
+                if (model.Success) {
                     logMessage("Cart confirmed by customer!");
                 } else {
                     logMessage("Error on confirm request!");
@@ -267,7 +269,7 @@
                     logMessage("Cart rejected by customer!");
 
                 } else {
-                    logMessage("Error on confirm request!");
+                    logMessage("Error on rejected request!");
                 }
             },
             error: function (result) {
