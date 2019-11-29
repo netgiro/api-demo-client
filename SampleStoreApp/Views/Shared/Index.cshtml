@@ -244,8 +244,7 @@
             type: "POST",
             data: { transactionId: $("#cartTransactionId").val(), confirm: true },
             success: function (result) {
-                var model = $.parseJSON(result.data);
-                if (model.Success) {
+                if (result.success) {
                     logMessage("Cart confirmed by customer!");
                 } else {
                     logMessage("Error on confirm request!");
