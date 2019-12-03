@@ -28,11 +28,6 @@ namespace SampleStoreApp.Controllers
             var transactionId = paymentResponse.PaymentInfo.TransactionId;
             var calculatedSignature = Signature.CalculateSignature(appKey, transactionId, nonce);
 
-            //if (signature != calculatedSignature)
-            //{
-            //    return Unauthorized("Invalid signature");
-            //}
-
             await this._hubcontext.Clients.Client(_clientManager.GetClientByTransactionId(transactionId)).SendAsync("ReceiveMessage", "user", "Callback received");
 
             return Ok();

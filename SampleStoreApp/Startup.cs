@@ -25,13 +25,6 @@ namespace SampleStoreApp
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
-            services.AddCors(o => o.AddPolicy("CallbackPolicy", builder =>
-            {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            }));
-
             services.AddSingleton<IClientManager, ClientManager>();
 
             services.AddSignalR();
@@ -47,8 +40,6 @@ namespace SampleStoreApp
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
-            app.UseCors("CallbackPolicy");
 
             app.UseRouting();
 
