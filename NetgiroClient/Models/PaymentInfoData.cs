@@ -28,8 +28,6 @@ namespace NetgiroClient.Models
 
         public bool? ClientIdentityConfirmed { get; set; }
 
-        public int CartId { get; set; }
-
         public string LocationId { get; set; }
 
         public string RegisterId { get; set; }
