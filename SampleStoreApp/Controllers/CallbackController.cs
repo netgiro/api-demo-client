@@ -28,6 +28,7 @@ namespace SampleStoreApp.Controllers
         {
             var signature = this.Request.Headers[Constants.Netgiro_Signature];
             var nonce = this.Request.Headers[Constants.Netgiro_Nonce];
+
             var transactionId = paymentResponse.PaymentInfo.TransactionId;
             var jsonModel = JsonConvert.SerializeObject(paymentResponse);
             var callbackUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}{Url.Action(nameof(CallbackController.Callback), "Callback")}";
