@@ -108,17 +108,6 @@
         logMessage("Stoped by cancel button!");
     });
 
-    $("#confirmRequestBtn").on("click", function (e) {
-        confirmRequest();
-        disableBuyBtn(false);
-    });
-
-    $("#rejectRequestBtn").on("click", function (e) {
-        rejectRequest();
-        disableBuyBtn(false);
-    });
-
-
     function postFormData() {
         disableBuyBtn(true);
         logMessage("Creating cart...");
@@ -192,12 +181,18 @@
                             logMessage("SUCCESS! Loan created.");
                         }
                         else {
-                            // These are result codes when cart is canceled
+                            // Result code when cart is canceled
                             if (model.ResultCode == 10201) {
                                 disableBuyBtn(false);
                                 window.clearInterval(intervalHandler);
                                 logMessage("Cart canceled!");
-
+                            }
+                            // Result code when cart is created but waiting for provider callback response
+                            // (this is because hangfire is not on test server and does not create loan)
+                            else if (model.ResultCode == 10429) {
+                                disableBuyBtn(false);
+                                window.clearInterval(intervalHandler);
+                                logMessage("SUCCESS! Cart confirmed.");
                             }
                             else if (model.Message != null && model.Message != "") {
                                 logMessage(model.Message);
