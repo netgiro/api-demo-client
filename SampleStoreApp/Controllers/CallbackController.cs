@@ -44,5 +44,17 @@ namespace SampleStoreApp.Controllers
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<ActionResult> CheckoutCallback([FromBody] CheckoutCallbackModel model)
+        {
+            return Ok();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> CheckoutCallback()
+        {
+            return Ok();
+        }
     }
 }
